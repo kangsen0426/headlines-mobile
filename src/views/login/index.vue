@@ -104,6 +104,9 @@ export default {
         Toast.success("登入成功");
         //保存用户登入状态
         this.$store.commit('setUser',res.data.data)
+
+        //登入成功，跳转回去
+        this.$router.back()
       } catch (err) {
         Toast.fail("登入失败");
       }
