@@ -1,7 +1,7 @@
 <template>
   <div class="home-container">
     <van-nav-bar class="app-nav-bar">
-      <van-button slot="title" icon="search" type="info" class="search-btn"
+      <van-button slot="title" icon="search" type="info" class="search-btn"  @click="$router.push('/search')"
         >搜索</van-button
       >
     </van-nav-bar>

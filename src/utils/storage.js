@@ -25,3 +25,11 @@ export const setItem = (name, value) => {
     window.localStorage.setItem(name, value)
 
 }
+
+export const removeItem = (name) => {
+
+    if (getItem(name)) {
+        window.localStorage.removeItem(name)
+    }
+
+}

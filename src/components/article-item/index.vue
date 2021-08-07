@@ -7,7 +7,7 @@
       <div class="cover-wrap" v-if="article.cover.type === 3">
         <div
           class="cover-wrap-item"
-          v-for="(img,index) in article.cover.images"
+          v-for="(img, index) in article.cover.images"
           :key="index"
         >
           <van-image width="116" height="73" fit="cover" :src="img" />
@@ -31,11 +31,9 @@
 </template>
 
 <script>
-import { getTimeGone } from '@/utils/dayjs'
-
+import { getTimeGone } from "@/utils/dayjs";
 
 export default {
-
   name: "articleitem",
   data() {
     return {};
@@ -47,11 +45,10 @@ export default {
     },
   },
   methods: {
-      getRealyTime(value){
-          return getTimeGone(value)
-      }
+    getRealyTime(value) {
+      return getTimeGone(value);
+    },
   },
-  
 };
 </script>
 
@@ -85,11 +82,15 @@ export default {
   }
 
   .label-wrap {
+    position: absolute;
     font-size: 11px;
     color: #b4b4b4b4;
+    bottom: 0;
+
     span {
       margin-right: 12px;
     }
   }
+
 }
 </style>
