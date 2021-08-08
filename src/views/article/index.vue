@@ -10,12 +10,6 @@
     <!-- /导航栏 -->
 
     <div class="main-wrap">
-      <!-- 加载中 -->
-      <!-- <div class="loading-wrap">
-        <van-loading color="#3296fa" vertical>加载中</van-loading>
-      </div> -->
-      <!-- /加载中 -->
-
       <!-- 加载完成-文章详情 -->
       <div class="article-detail">
         <!-- 文章标题 -->
@@ -45,11 +39,6 @@
             :loading="isFollowLoading"
             >{{ article.is_followed ? "已关注" : "关注" }}</van-button
           >
-          <!-- <van-button
-            class="follow-btn"
-            round
-            size="small"
-          >已关注</van-button> -->
         </van-cell>
         <!-- /用户信息 -->
 
@@ -59,32 +48,30 @@
           v-html="article.content"
           ref="rticle-content"
         ></div>
+
         <van-divider>正文结束</van-divider>
+
+        <!-- 文章评论 -->
+        <article-comment
+          :list="commentList"
+          :source="articleId"
+          @update-total-count="totalCommentCount = $event"
+          @reply-click="replyClick"
+        ></article-comment>
       </div>
-      <!-- /加载完成-文章详情 -->
-
-      <!-- 加载失败：404 -->
-      <!-- <div class="error-wrap">
-        <van-icon name="failure" />
-        <p class="text">该资源不存在或已删除！</p>
-      </div> -->
-      <!-- /加载失败：404 -->
-
-      <!-- 加载失败：其它未知错误（例如网络原因或服务端异常） -->
-      <!-- <div class="error-wrap">
-        <van-icon name="failure" />
-        <p class="text">内容加载失败！</p>
-        <van-button class="retry-btn">点击重试</van-button>
-      </div> -->
-      <!-- /加载失败：其它未知错误（例如网络原因或服务端异常） -->
     </div>
 
     <!-- 底部区域 -->
     <div class="article-bottom">
-      <van-button class="comment-btn" type="default" round size="small"
+      <van-button
+        @click="isPostShow = true"
+        class="comment-btn"
+        type="default"
+        round
+        size="small"
         >写评论</van-button
       >
-      <van-icon name="comment-o" info="123" color="#777" />
+      <van-icon name="comment-o" :info="totalCommentCount" color="#777" />
       <van-icon
         :color="article.is_collected ? 'orange' : '#777'"
         @click="isFollowed"
@@ -98,6 +85,24 @@
       <van-icon name="share" color="#777777"></van-icon>
     </div>
     <!-- /底部区域 -->
+
+    <!-- 发布评论弹出层 -->
+    <van-popup v-model="isPostShow" position="bottom">
+      <post-comment
+        :target="articleId"
+        @postsuccess="onPostSuccess"
+      ></post-comment>
+    </van-popup>
+
+    <!-- 评论回复弹出层 -->
+    <van-popup
+      v-model="isReplyShow"
+      position="bottom"
+      closeable
+      :style="{ height: '60%' }"
+    >
+      <comment-reply :comment='replyComment'></comment-reply>
+    </van-popup>
   </div>
 </template>
 
@@ -108,10 +113,16 @@ import { getTimeGone } from "@/utils/dayjs";
 import { ImagePreview } from "vant";
 import { addFollow, deleteFollow } from "@/api/user";
 import { addCollect, deleteCollect, addLike, deleteLike } from "@/api/article";
-
+import ArticleComment from "./components/comment-list";
+import postComment from "./components/post-comment.vue";
+import commentReply from "./components/comment-reply.vue";
 export default {
   name: "ArticleIndex",
-  components: {},
+  components: {
+    ArticleComment,
+    postComment,
+    commentReply,
+  },
   props: {
     articleId: {
       type: [Number, String, Object],
@@ -122,6 +133,11 @@ export default {
     return {
       article: {}, //文章列表
       isFollowLoading: false, //关注时等待网络
+      isPostShow: false,
+      commentList: [], //文章评论数据
+      totalCommentCount: 0, //评论总数量
+      isReplyShow: false, //回复弹出层
+      replyComment:{} //当前点击的回复对象
     };
   },
   computed: {},
@@ -206,21 +222,47 @@ export default {
         `${this.article.attitude === 1 ? "" : "取消"}点赞成功`
       );
     },
+    onPostSuccess(data) {
+      //更新最新的评论列表
+      this.commentList.unshift(data);
+
+      this.totalCommentCount++;
+
+      this.isPostShow = false;
+    },
+    replyClick(item) {
+
+         console.log(item);
+      this.replyComment = item
+      //显示回复弹出层
+      this.isReplyShow = true;
+
+     
+    },
   },
 };
 </script>
 
 <style scoped lang="less">
 .article-container {
-  //   .main-wrap {
-  //     position: fixed;
-  //     left: 0;
-  //     right: 0;
-  //     top: 92px;
-  //     bottom: 88px;
-  //     overflow-y: scroll;
-  // background-color: #fff;
-  //   }
+  .main-wrap {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 46px;
+    bottom: 44px;
+    overflow-y: scroll;
+    background-color: #fff;
+  }
+/deep/ .van-nav-bar .van-icon {
+    color: #fff;
+  }
+  /deep/ .van-nav-bar__content {
+    background-color: #1989fa;
+  }
+  /deep/ .van-nav-bar__title {
+    color: #fff;
+  }
   .article-detail {
     .article-title {
       font-size: 20px;
@@ -262,40 +304,6 @@ export default {
     }
   }
 
-  .loading-wrap {
-    padding: 200px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #fff;
-  }
-
-  .error-wrap {
-    padding: 200px 32px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: #fff;
-    .van-icon {
-      font-size: 122px;
-      color: #b4b4b4;
-    }
-    .text {
-      font-size: 30px;
-      color: #666666;
-      margin: 33px 0 46px;
-    }
-    .retry-btn {
-      width: 280px;
-      height: 70px;
-      line-height: 70px;
-      border: 1px solid #c3c3c3;
-      font-size: 30px;
-      color: #666666;
-    }
-  }
-
   .article-bottom {
     position: fixed;
     left: 0;
@@ -323,6 +331,7 @@ export default {
         background-color: #e22829;
       }
     }
+
   }
 }
 </style>
