@@ -1,5 +1,8 @@
 <template>
-  <van-cell class="article-item">
+  <van-cell
+    class="article-item"
+    :to="{ name: 'article', params: { articleId: article.art_id } }"
+  >
     <div slot="title" class="title van-multi-ellipsis--l3">
       {{ article.title }}
     </div>
@@ -91,6 +94,5 @@ export default {
       margin-right: 12px;
     }
   }
-
 }
 </style>
