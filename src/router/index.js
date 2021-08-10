@@ -18,7 +18,7 @@ const routes = [
     path: '/layout',
     component: () => import('@/views/layout/'),
     redirect: '/home',
-    children:[
+    children: [
       {
         path: '/home',
         name: 'home',
@@ -50,6 +50,7 @@ const routes = [
         component: () => import('@/views/user-profile'),
       },
     
+
     ]
   },
   {
@@ -58,7 +59,12 @@ const routes = [
     component: () => import('@/views/article'),
     // 将路由动态参数映射到组件的 props 中，更推荐这种做法
     props: true
-  }
+  },
+  {
+    path: '/userchat',
+    name: 'userChat',
+    component: () => import('@/views/userChat'),
+  },
 
 ]
 
