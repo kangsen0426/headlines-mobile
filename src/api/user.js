@@ -60,3 +60,25 @@ export const getUserChannels = () => {
       url: `/app/v1_0/user/followings/${userId}`
     })
   }
+
+  export const getProfile = () => {
+    return request({
+      method: 'GET',
+      url: `/app/v1_0/user/profile`
+    })
+  }
+
+  export const editProfile = () => {
+    return request({
+      method: 'PATCH',
+      url: `/app/v1_0/user/profile`
+    })
+  }
+
+  export const editUserPhoto = (data) => {
+    return request({
+      method: 'PATCH',
+      url: `/app/v1_0/user/photo`,
+      data
+    })
+  }
